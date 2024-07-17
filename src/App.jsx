@@ -2,9 +2,22 @@ import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { LineChart, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
 
 function App() {
-const BASE_URL = 'https://v6.exchangerate-api.com/v6/72434d9c15584137b880d526/latest/';
+  const data = [
+    { name: 'Page A', uv: 400, pv: 24, amt: 24 },
+    { name: 'Page B', uv: 30000, pv: 1398, amt: 2210 },
+    { name: 'Page C', uv: 2000, pv: 9800, amt: 2290 },
+    { name: 'Page D', uv: 2780, pv: 3908, amt: 2000 },
+    { name: 'Page E', uv: 1890, pv: 4800, amt: 2181 },
+    { name: 'Page F', uv: 2390, pv: 3800, amt: 2500 },
+    { name: 'Page G', uv: 3490, pv: 4300, amt: 2100 },
+  ];
+  const type = ["latest", "history"];
+  const fiveYear = [2014]
+const BASE_URL = 'https://v6.exchangerate-api.com/v6/72434d9c15584137b880d526/';
+const forexRateAPI_BASE = 'https://api.forexrateapi.com/v1/2021-03-24?api_key=[ba0c3f65595f754b6071c0782fb2162f]'
  const [a,setA] = useState(1);
  const [from,setFrom] = useState("USD");
  const [to,setTo] = useState("GBP")
@@ -18,13 +31,26 @@ const BASE_URL = 'https://v6.exchangerate-api.com/v6/72434d9c15584137b880d526/la
 setB(event.target.value);
 setA((event.target.value/rate).toFixed(2));
 };
+const getEx = useEffect(() => {
+  fetch(forexRateAPI_BASE)
+  .then(res => res.json())
+  .then(data => {setEx(data.conversion_rates[to]);console.log(data.conversion_rates)})
+},[from,to])
+const [ex,setEx] = useState();
 const exchange = useEffect(
   () => {
-    fetch(BASE_URL + from)
+    fetch(BASE_URL + type[0] + "/" + from)
     .then(res => res.json())
     .then(data => {setRate(data.conversion_rates[to]); console.log(data.conversion_rates);})
   } , [from,to])
- 
+  const renderLineChart = (
+    <LineChart width={400} height={400} data={data}>
+      <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+      <CartesianGrid stroke="#ccc" />
+    <XAxis dataKey="name" />
+    <YAxis />
+    </LineChart>
+  );
   return (
     <>
 <h1>Currency converter</h1>
@@ -366,12 +392,17 @@ const exchange = useEffect(
 </select>
 </div>
 <div>
-<button onClick={() => {}}></button>
+<button onClick={getEx}></button>
 </div>
 <div>
   <p>{a + ' ' + from + ' is ' + (Math.round(rate*a*100)/100) + ' ' + to}</p>
 </div>
-
+<div>
+  {renderLineChart}
+</div>
+<div>
+  <p>{ex} is</p>
+</div>
 </>
   )
 }
