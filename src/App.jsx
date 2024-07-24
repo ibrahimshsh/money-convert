@@ -8,44 +8,62 @@ function App() {
   const data = [
     { name: 'Page A', uv: 400, pv: 24, amt: 24 },
     { name: 'Page B', uv: 30000, pv: 1398, amt: 2210 },
-    { name: 'Page C', uv: 2000, pv: 9800, amt: 2290 },
-    { name: 'Page D', uv: 2780, pv: 3908, amt: 2000 },
-    { name: 'Page E', uv: 1890, pv: 4800, amt: 2181 },
-    { name: 'Page F', uv: 2390, pv: 3800, amt: 2500 },
-    { name: 'Page G', uv: 3490, pv: 4300, amt: 2100 },
+    { name: 'Page C', uv: 2000 },
+    { name: 'Page D', uv: 2780 },
+    { name: 'Page E', uv: 1890 },
+    { name: 'Page F', uv: 2390 },
+    { name: 'Page G', uv: 3490}
   ];
   const type = ["latest", "history"];
-  const fiveYear = [2014]
+ var y = [];
+  let yourDate = new Date();
+  const [years,setYears] = useState([2024]);
+  const createDate = (year,times) => {
+   
+  for (let i = 0; i < times; i++){
+    y.push(year--)
+  }
+setYears(y);
+  }
+  window.onload = function()  {
+    yourDate.toISOString().substring(0,4)
+    createDate()
+  }
+  let ratess = [];
 const BASE_URL = 'https://v6.exchangerate-api.com/v6/72434d9c15584137b880d526/';
-const forexRateAPI_BASE = 'https://api.forexrateapi.com/v1/2021-03-24?api_key=[ba0c3f65595f754b6071c0782fb2162f]'
- const [a,setA] = useState(1);
+ const [a,setA] = useState("");
+ const [decplace,setDecplace] = useState(2);
  const [from,setFrom] = useState("USD");
  const [to,setTo] = useState("GBP")
  const handleaChange = (event) => {
   setA(event.target.value);
-  setB((event.target.value*rate).toFixed(2))
+  setB((event.target.value*rate).toFixed(decplace))
 }
- const [b,setB] = useState(1);
+ const [b,setB] = useState("");
  const [rate,setRate] = useState();
  const handlebChange = (event) => {
 setB(event.target.value);
-setA((event.target.value/rate).toFixed(2));
+setA((event.target.value/rate).toFixed(decplace));
 };
-const getEx = useEffect(() => {
-  fetch(forexRateAPI_BASE)
+const handleDecPlaceChange = (event) => {
+  setDecplace(event.target.value);
+  };
+const getEx = (y) => {
+  fetch('https://api.forexrateapi.com/v1/'+y+'-01-01'+'?api_key=e2decf5c771677bde7de873af272985e&base='+from)
   .then(res => res.json())
-  .then(data => {setEx(data.conversion_rates[to]);console.log(data.conversion_rates)})
-},[from,to])
-const [ex,setEx] = useState();
+  .then(data => {console.log(data);console.log(data.rates);ratess.push(data.rates[(to.substring(0,3))])})
+}
+const getExChange = useEffect(years.map(getEx),[to,from,years])
+const [ex,setEx] = useState([]);
 const exchange = useEffect(
   () => {
     fetch(BASE_URL + type[0] + "/" + from)
     .then(res => res.json())
-    .then(data => {setRate(data.conversion_rates[to]); console.log(data.conversion_rates);})
-  } , [from,to])
+    .then(data => {setRate(data.conversion_rates[to]);setRate(data.conversion_rates[to]);console.log(data.conversion_rates);})
+  } , [from,to,years])
   const renderLineChart = (
     <LineChart width={400} height={400} data={data}>
-      <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+      <Line type="monotone" dataKey="AED" stroke="#8884d8" />
       <CartesianGrid stroke="#ccc" />
     <XAxis dataKey="name" />
     <YAxis />
@@ -392,16 +410,24 @@ const exchange = useEffect(
 </select>
 </div>
 <div>
-<button onClick={getEx}></button>
+<button onClick={() => {console.log(JSON.stringify(ratess))}}>yvu</button>
 </div>
 <div>
-  <p>{a + ' ' + from + ' is ' + (Math.round(rate*a*100)/100) + ' ' + to}</p>
+  <p>{a + ' ' + from + ' is ' + (a*rate).toFixed(decplace) + ' ' + to}</p>
+</div>
+<div>
+<input type='number' value={decplace} onChange={handleDecPlaceChange} />
 </div>
 <div>
   {renderLineChart}
+  <input type='number' onChange={() =>{createDate(2024,event.target.value)
+    console.log(years)}}/>
 </div>
 <div>
   <p>{ex} is</p>
+  <p>
+l
+  </p>
 </div>
 </>
   )
