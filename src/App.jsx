@@ -379,8 +379,9 @@ const exchange = useEffect(
 <input type='number' value={decplace} onChange={handleDecPlaceChange} />
 </div>
 <div>
-
-
+<footer>
+  <a href='https://github.com/ibrahimshsh/money-convert' target='_blank'><p>Link to my Github</p></a>
+</footer>
 </div>
 </>
   )
