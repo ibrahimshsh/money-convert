@@ -1,34 +1,9 @@
 import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
-import { LineChart, Line, CartesianGrid, XAxis, YAxis } from 'recharts';
+import React from 'react';
 
 function App() {
-  const data = [
-    { name: 'Page A', uv: 400, pv: 24, amt: 24 },
-    { name: 'Page B', uv: 30000, pv: 1398, amt: 2210 },
-    { name: 'Page C', uv: 2000 },
-    { name: 'Page D', uv: 2780 },
-    { name: 'Page E', uv: 1890 },
-    { name: 'Page F', uv: 2390 },
-    { name: 'Page G', uv: 3490}
-  ];
-  const type = ["latest", "history"];
- var y = [];
-  let yourDate = new Date();
-  const [years,setYears] = useState([2024]);
-  const createDate = (year,times) => {
-   
-  for (let i = 0; i < times; i++){
-    y.push(year--)
-  }
-setYears(y);
-  }
-  window.onload = function()  {
-    yourDate.toISOString().substring(0,4)
-    createDate()
-  }
+
   let ratess = [];
 const BASE_URL = 'https://v6.exchangerate-api.com/v6/72434d9c15584137b880d526/';
  const [a,setA] = useState("");
@@ -40,7 +15,7 @@ const BASE_URL = 'https://v6.exchangerate-api.com/v6/72434d9c15584137b880d526/';
   setB((event.target.value*rate).toFixed(decplace))
 }
  const [b,setB] = useState("");
- const [rate,setRate] = useState();
+ const [rate,setRate] = useState(1);
  const handlebChange = (event) => {
 setB(event.target.value);
 setA((event.target.value/rate).toFixed(decplace));
@@ -48,27 +23,12 @@ setA((event.target.value/rate).toFixed(decplace));
 const handleDecPlaceChange = (event) => {
   setDecplace(event.target.value);
   };
-const getEx = (y) => {
-  fetch('https://api.forexrateapi.com/v1/'+y+'-01-01'+'?api_key=e2decf5c771677bde7de873af272985e&base='+from)
-  .then(res => res.json())
-  .then(data => {console.log(data);console.log(data.rates);ratess.push(data.rates[(to.substring(0,3))])})
-}
-const getExChange = useEffect(years.map(getEx),[to,from,years])
-const [ex,setEx] = useState([]);
 const exchange = useEffect(
   () => {
-    fetch(BASE_URL + type[0] + "/" + from)
+    fetch(BASE_URL + "/latest" + "/" + from)
     .then(res => res.json())
     .then(data => {setRate(data.conversion_rates[to]);setRate(data.conversion_rates[to]);console.log(data.conversion_rates);})
-  } , [from,to,years])
-  const renderLineChart = (
-    <LineChart width={400} height={400} data={data}>
-      <Line type="monotone" dataKey="AED" stroke="#8884d8" />
-      <CartesianGrid stroke="#ccc" />
-    <XAxis dataKey="name" />
-    <YAxis />
-    </LineChart>
-  );
+  } , [from,to])
   return (
     <>
 <h1>Currency converter</h1>
@@ -410,7 +370,7 @@ const exchange = useEffect(
 </select>
 </div>
 <div>
-<button onClick={() => {console.log(JSON.stringify(ratess))}}>yvu</button>
+
 </div>
 <div>
   <p>{a + ' ' + from + ' is ' + (a*rate).toFixed(decplace) + ' ' + to}</p>
@@ -419,15 +379,8 @@ const exchange = useEffect(
 <input type='number' value={decplace} onChange={handleDecPlaceChange} />
 </div>
 <div>
-  {renderLineChart}
-  <input type='number' onChange={() =>{createDate(2024,event.target.value)
-    console.log(years)}}/>
-</div>
-<div>
-  <p>{ex} is</p>
-  <p>
-l
-  </p>
+
+
 </div>
 </>
   )
